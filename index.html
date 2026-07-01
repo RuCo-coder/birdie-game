@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCM Birdie Game 2026 — Leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#1E3A2F; --green-2:#2E5D4B; --eagle:#5E9A47; --eagle-bg:#D8EACD;
+    --clay:#B4633A; --clay-bg:#F4E3D6; --cream:#F3EFE7; --paper:#FBFAF6;
+    --ink:#20261F; --muted:#7A7466; --line:#E1DBCF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Archivo',sans-serif;background:var(--cream);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto;padding:0 20px 80px}
+  header{padding:44px 0 22px;text-align:center}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--clay);font-weight:600;margin-bottom:12px}
+  h1{font-size:clamp(32px,7vw,50px);font-weight:900;letter-spacing:-.02em;color:var(--green);line-height:1}
+  .sub{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);margin-top:12px;max-width:470px;margin-left:auto;margin-right:auto}
+  .updated{display:block;margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+  .payout{margin:16px auto 4px;max-width:440px;background:var(--eagle-bg);border:1.5px solid var(--eagle);border-radius:12px;padding:14px 18px}
+  .payout .pot{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:700;color:#2F6B23;line-height:1}
+  .payout .pot .lbl{display:block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#3E7A2E;font-weight:600;margin-bottom:3px}
+  .payout .refunds{margin-top:10px;padding-top:10px;border-top:1px solid #BBD6A9;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#3E7A2E}
+  .payout .refunds .r{display:flex;justify-content:space-between;padding:2px 0}
+  .payout .refunds .r .amt{font-weight:700}
+  .payout .none{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#3E7A2E;margin-top:6px}
+  .payout .note{margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.45;color:#3E7A2E;opacity:.85}
+  .payout .potrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .payout .prov{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#3E7A2E;font-weight:600;background:#C6E0B8;padding:3px 8px;border-radius:6px}
+  .payout .rhead{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#3E7A2E;font-weight:600;margin-bottom:4px}
+  .refresh{background:none;border:1px solid var(--line);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 12px;border-radius:8px;cursor:pointer;margin-top:10px}
+  .refresh:hover{border-color:var(--clay);color:var(--clay)}
+  .banner{display:flex;gap:12px;justify-content:center;margin:6px 0 22px;flex-wrap:wrap}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 20px;text-align:center;min-width:120px}
+  .stat .n{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:700;color:var(--green);line-height:1}
+  .stat .l{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:4px;font-family:'IBM Plex Mono',monospace}
+  .stat.done .n{color:var(--eagle)}
+  .board{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .row{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
+  .row:last-child{border-bottom:none}
+  .row:hover{background:#F5F2EB}
+  .row.head{background:var(--green);color:var(--paper);cursor:default;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:12px 20px;font-weight:500}
+  .row.head:hover{background:var(--green)}
+  .row.complete{background:var(--eagle-bg)}
+  .row.complete:hover{background:#CFE4C2}
+  .rank{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:18px;color:var(--muted);text-align:center}
+  .row.complete .rank{color:var(--eagle);font-weight:700}
+  .who{display:flex;align-items:center;gap:8px;min-width:0}
+  .name{font-weight:700;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .score-tag{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;color:var(--eagle)}
+  .chev{font-size:11px;color:var(--muted);transition:transform .18s;font-family:'IBM Plex Mono',monospace}
+  .row.open .chev{transform:rotate(90deg)}
+  .flag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--clay);text-transform:uppercase}
+  .status{text-align:right;font-family:'IBM Plex Mono',monospace}
+  .status .big{font-weight:700;font-size:17px;color:var(--clay)}
+  .row.complete .status .big{color:var(--eagle)}
+  .status .sm{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .detail{grid-column:1/-1;max-height:0;overflow:hidden;transition:max-height .28s ease}
+  .row.open .detail{max-height:420px}
+  .holes{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;padding:16px 2px 4px}
+  .hole{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--line);background:#fff}
+  .hole .hn{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.05em}
+  .hole .hm{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:700;margin-top:1px;line-height:1}
+  .hole.birdie{background:var(--clay-bg);border-color:#E4C9B4}
+  .hole.birdie .hm{color:var(--clay)}
+  .hole.eagle{background:var(--eagle-bg);border-color:#BBD6A9}
+  .hole.eagle .hm{color:var(--eagle)}
+  .hole.left{background:#F4F2ED;border-style:dashed}
+  .hole.left .hm{color:#C4BEB2}
+  .legend{display:flex;gap:16px;justify-content:center;padding:10px 0 4px;flex-wrap:wrap}
+  .legend span{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .dot.b{background:var(--clay-bg);border:1px solid #E4C9B4}
+  .dot.e{background:var(--eagle-bg);border:1px solid #BBD6A9}
+  .dot.l{background:#F4F2ED;border:1px dashed #C4BEB2}
+  .msg{text-align:center;padding:40px 20px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted)}
+  .msg.err{color:var(--clay)}
+  footer{text-align:center;margin-top:28px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+  @media(max-width:480px){
+    .row{grid-template-columns:36px 1fr auto;gap:8px;padding:13px 14px}
+    .name{font-size:15px}.holes{grid-template-columns:repeat(6,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Country Club of Mobile</div>
+    <h1>Birdie Game <span style="color:var(--clay)">2026</span></h1>
+    <div class="sub">Birdie or better on all 18 holes. Finishers rank first by score to par — then players by holes left.</div>
+    <div class="payout" id="payout"></div>
+    <button class="refresh" id="refresh">↻ Refresh scores</button>
+  </header>
+  <div class="banner" id="banner"></div>
+  <div class="board" id="board"><div class="msg" id="msg">Loading scores…</div></div>
+  <div class="legend">
+    <span><i class="dot e"></i>Eagle+ (green circle)</span>
+    <span><i class="dot b"></i>Birdie (outline circle)</span>
+    <span><i class="dot l"></i>Still needed</span>
+  </div>
+  <footer>Tap a player to see their card &middot; hosted by Myers Rudolph</footer>
+</div>
+
+<script>
+/* ===================================================================
+   ONE-TIME SETUP — paste your published Google Sheet CSV link below.
+   In Google Sheets:  File → Share → Publish to web →
+   choose the sheet tab, format = Comma-separated values (.csv) → Publish.
+   Copy that URL and paste it between the quotes here:
+   =================================================================== */
+const SHEET_CSV_URL = https://docs.google.com/spreadsheets/d/e/2PACX-1vRfdzi5k7B-vxHVuBUbnxa2LZpo9JBuF0iEeviIIFmIG9GpmCkBhp_t1he3N_l7bGShSq1XBC744tcv/pub?gid=0&single=true&output=csv;
+/* =================================================================== */
+
+const PAR = [4,3,4,5,4,3,4,4,4,4,4,3,4,3,4,4,5,4];
+const OUTLINE = {1:'\u2460',2:'\u2461',3:'\u2462',4:'\u2463',5:'\u2464',6:'\u2465',7:'\u2466',8:'\u2467',9:'\u2468'};
+const NEGCIRC = {1:'\u24F5',2:'\u24F6',3:'\u24F7',4:'\u24F8',5:'\u24F9'};
+const fmt = n => (n>0?'+':'')+n;
+
+function parseCSV(text){
+  // simple CSV: no quoted commas expected in this data
+  return text.trim().split(/\r?\n/).map(line=>line.split(','));
+}
+
+function buildPlayers(rows){
+  // find header row (starts with "Player"), skip a PAR row if present
+  const header = rows[0].map(s=>s.trim().toLowerCase());
+  const nameIdx = header.indexOf('player');
+  const paidIdx = header.indexOf('paid');
+  const holeIdx = [];
+  for(let h=1;h<=18;h++){ holeIdx.push(header.indexOf('h'+h)); }
+  const out = [];
+  for(let r=1;r<rows.length;r++){
+    const row = rows[r];
+    const name = (row[nameIdx]||'').trim();
+    if(!name || name.toUpperCase()==='PAR') continue;
+    const paidRaw = (paidIdx>=0 ? (row[paidIdx]||'') : 'Y').trim().toUpperCase();
+    const paid = paidRaw==='Y'||paidRaw==='YES'||paidRaw==='TRUE'||paidRaw==='PAID';
+    const strokes = holeIdx.map(i=>{
+      const v = i>=0 ? parseInt((row[i]||'').trim(),10) : NaN;
+      return isNaN(v) ? 0 : v;
+    });
+    out.push({name, strokes, paid});
+  }
+  return out;
+}
+
+function render(rawPlayers){
+  const parsed = rawPlayers.map(({name,strokes,paid})=>{
+    const holes = strokes.map((s,h)=>{
+      if(!s) return {v:null,made:false,glyph:null};
+      const d = s - PAR[h];
+      if(d>=0) return {v:null,made:false,glyph:null};
+      const glyph = d<=-2 ? (NEGCIRC[s]||'\u25CF') : (OUTLINE[s]||'\u25CB');
+      return {v:d,made:true,glyph};
+    });
+    const covered = holes.filter(x=>x.made).length;
+    const left = 18-covered;
+    const eagles = holes.filter(x=>x.made && x.v<=-2).length;
+    const toPar = holes.reduce((a,x)=>a+(x.made?x.v:0),0);
+    return {name,holes,paid,covered,left,eagles,toPar,done:left===0};
+  });
+
+  parsed.sort((a,b)=>
+    (b.done-a.done) ||
+    (a.done && b.done ? a.toPar-b.toPar : 0) ||
+    (a.left-b.left) || (b.eagles-a.eagles) || a.name.localeCompare(b.name));
+  let ranks=[],prevKey=null,rank=0;
+  parsed.forEach((p,i)=>{
+    const k = p.done?'D'+p.toPar : p.left+'.'+p.eagles;
+    if(k!==prevKey){rank=i+1;prevKey=k;} ranks.push(rank);
+  });
+
+  const finished = parsed.filter(p=>p.done).length;
+  const closest = parsed.find(p=>!p.done);
+  document.getElementById('banner').innerHTML =
+    '<div class="stat done"><div class="n">'+finished+'</div><div class="l">Completed</div></div>'+
+    '<div class="stat"><div class="n">'+parsed.length+'</div><div class="l">Players</div></div>'+
+    '<div class="stat"><div class="n">'+(closest?closest.left:0)+'</div><div class="l">Closest &middot; '+(closest?closest.name.split(' ')[0]:'—')+'</div></div>';
+
+  // ---- Payout ----
+  // $50 buy-in per player. Finishers get their $50 back.
+  // Non-finishers forfeit their $50 into a prize pool, awarded to the
+  // finisher(s) with the best (lowest) score to par — split evenly on a tie.
+  // GAME RUNS ALL YEAR — standings are provisional until it closes 12/31/26.
+  const BUYIN = 50;
+  const winners = parsed.filter(p=>p.done);
+  const nonFinishers = parsed.length - winners.length;
+  const forfeitPool = nonFinishers * BUYIN;
+  let payHTML;
+  if(winners.length){
+    const best = Math.min(...winners.map(w=>w.toPar));
+    const champs = winners.filter(w=>w.toPar===best);
+    const share = forfeitPool / champs.length;
+    payHTML = '<div class="potrow"><div class="pot"><span class="lbl">Prize pool</span>$'+forfeitPool.toLocaleString()+'</div><span class="prov">Provisional &middot; game ends Dec 31, 2026</span></div>';
+    payHTML += '<div class="refunds"><div class="rhead">Projected leader'+(champs.length>1?'s (tied)':'')+'</div>';
+    champs.forEach(c=>{
+      const take = BUYIN + share;
+      payHTML += '<div class="r"><span>&#9733; '+c.name+' &middot; '+fmt(c.toPar)+'</span><span class="amt">$'+take.toLocaleString()+'</span></div>';
+    });
+    winners.filter(w=>w.toPar!==best).forEach(w=>{
+      payHTML += '<div class="r" style="opacity:.75"><span>'+w.name+' &middot; '+fmt(w.toPar)+'</span><span class="amt">$'+BUYIN+' back</span></div>';
+    });
+    payHTML += '</div>';
+    payHTML += '<div class="note">If the game ended today, '+(champs.length>1?champs.length+' tied leaders would split ':'the leader would take ')+'the $'+forfeitPool.toLocaleString()+' forfeited by '+nonFinishers+' unfinished players (plus $'+BUYIN+' back each). Anyone can still finish and change this before Dec 31.</div>';
+  } else {
+    const pot = parsed.length * BUYIN;
+    payHTML = '<div class="potrow"><div class="pot"><span class="lbl">Prize pool in play</span>$'+pot.toLocaleString()+'</div><span class="prov">Game ends Dec 31, 2026</span></div>';
+    payHTML += '<div class="none">No finishers yet — first to birdie all 18 is in the money.</div>';
+  }
+  document.getElementById('payout').innerHTML = payHTML;
+
+  let html = '<div class="row head"><div style="text-align:center">#</div><div>Player</div><div style="text-align:right">Status</div></div>';
+  parsed.forEach((p,i)=>{
+    const r = ranks[i];
+    const statusBig = p.done ? fmt(p.toPar) : p.left;
+    const statusSm  = p.done ? "final" : "to go";
+    const flag = p.paid ? "" : '<span class="flag">Owes</span>';
+    const scoreTag = p.done ? '<span class="score-tag">'+fmt(p.toPar)+'</span>' : "";
+    const eagleTag = (!p.done && p.eagles) ? '<span class="flag" style="color:var(--eagle)">'+p.eagles+'&#9733;</span>' : "";
+    const holes = p.holes.map((x,h)=>{
+      let cls='left',mark='&middot;';
+      if(x.made){ cls=x.v<=-2?'eagle':'birdie'; mark=x.glyph; }
+      return '<div class="hole '+cls+'"><span class="hn">'+(h+1)+'</span><span class="hm">'+mark+'</span></div>';
+    }).join('');
+    html +=
+      '<div class="row '+(p.done?'complete':'')+'" data-i="'+i+'">'+
+        '<div class="rank">'+r+'</div>'+
+        '<div class="who"><span class="chev">&#9656;</span><span class="name">'+p.name+'</span>'+scoreTag+eagleTag+flag+'</div>'+
+        '<div class="status"><span class="big">'+statusBig+'</span> <span class="sm">'+statusSm+'</span></div>'+
+        '<div class="detail"><div class="holes">'+holes+'</div></div>'+
+      '</div>';
+  });
+  document.getElementById('board').innerHTML = html;
+  document.querySelectorAll('.row[data-i]').forEach(row=>{
+    row.addEventListener('click',()=>row.classList.toggle('open'));
+  });
+}
+
+function load(){
+  const board = document.getElementById('board');
+  if(SHEET_CSV_URL.indexOf('PASTE_YOUR')===0){
+    board.innerHTML='<div class="msg err">Setup needed: paste your published Google Sheet CSV link into SHEET_CSV_URL near the top of this file.</div>';
+    return;
+  }
+  board.innerHTML='<div class="msg">Loading scores…</div>';
+  // cache-bust so refreshes pull the latest sheet
+  const url = SHEET_CSV_URL + (SHEET_CSV_URL.includes('?')?'&':'?') + 't=' + Date.now();
+  fetch(url)
+    .then(r=>{ if(!r.ok) throw new Error(r.status); return r.text(); })
+    .then(text=>{
+      const players = buildPlayers(parseCSV(text));
+      if(!players.length){ board.innerHTML='<div class="msg err">No players found in the sheet. Check the column headers (Player, Paid, H1…H18).</div>'; return; }
+      render(players);
+    })
+    .catch(err=>{
+      board.innerHTML='<div class="msg err">Could not load the sheet ('+err.message+'). Make sure it\u2019s published to the web as CSV.</div>';
+    });
+}
+
+document.getElementById('refresh').addEventListener('click',load);
+load();
+</script>
+</body>
+</html>
